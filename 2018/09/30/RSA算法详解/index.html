@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-flash.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机网络," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址：安全体系（二）——RSA算法详解 概述　　RSA公钥加密算法是1977年由罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和伦纳德·阿德曼（Leonard Adleman）一起提出的。1987年首次公布，当时他们三人都在麻省理工学院工作。RSA算法以他们三人姓氏开头字母命名。　　RSA是目前最有影响力的公钥加密算法，到2008年为止，世界上还没有任何可靠的攻">
+<meta name="keywords" content="计算机网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA算法详解">
+<meta property="og:url" content="http://yoursite.com/2018/09/30/RSA算法详解/index.html">
+<meta property="og:site_name" content="lollipop的博客">
+<meta property="og:description" content="原文地址：安全体系（二）——RSA算法详解 概述　　RSA公钥加密算法是1977年由罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和伦纳德·阿德曼（Leonard Adleman）一起提出的。1987年首次公布，当时他们三人都在麻省理工学院工作。RSA算法以他们三人姓氏开头字母命名。　　RSA是目前最有影响力的公钥加密算法，到2008年为止，世界上还没有任何可靠的攻">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-10-08T15:03:36.119Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RSA算法详解">
+<meta name="twitter:description" content="原文地址：安全体系（二）——RSA算法详解 概述　　RSA公钥加密算法是1977年由罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和伦纳德·阿德曼（Leonard Adleman）一起提出的。1987年首次公布，当时他们三人都在麻省理工学院工作。RSA算法以他们三人姓氏开头字母命名。　　RSA是目前最有影响力的公钥加密算法，到2008年为止，世界上还没有任何可靠的攻">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/30/RSA算法详解/"/>
+
+
+
+
+
+  <title>RSA算法详解 | lollipop的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">lollipop的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/30/RSA算法详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="lollipop的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RSA算法详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-30T12:12:16+08:00">
+                2018-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/09/30/RSA算法详解/" class="leancloud_visitors" data-flag-title="RSA算法详解">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>原文地址：<a href="https://www.cnblogs.com/songwenlong/p/6523652.html" target="_blank" rel="noopener">安全体系（二）——RSA算法详解</a></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>　　RSA公钥加密算法是1977年由罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和伦纳德·阿德曼（Leonard Adleman）一起提出的。1987年首次公布，当时他们三人都在麻省理工学院工作。RSA算法以他们三人姓氏开头字母命名。<br>　　RSA是目前最有影响力的公钥加密算法，到2008年为止，世界上还没有任何可靠的攻击RSA算法的方式。只要秘钥长度足够长，用RSA加密的信息实际上是不能被解破的。ISO推荐它为公钥数据加密标准。<br>　　RSA算法基于简单的数论事实：将两个大质数相乘十分容易，但是想要对其乘积进行因式分解却极其困难，因此可以将乘积公开作为加密密钥。<br>　　RSA是”非对称加密算法”，非对称加密算法需要两个密钥：<strong> 公开密钥（publickey）和私有密钥（privatekey）</strong> 。公钥与私钥是配对的，用公钥加密的数据只有配对的私钥才能解密，反之亦然。因加解密使用两个不同的密钥，所以这种算法叫作非对称加密算法。　　<br>　　非对称算法的在应用的过程如下，假设发送方向接收方发送消息（明文）：<br>　　1.接收方生成公钥和私钥，公钥公开，私钥保留；<br>　　2.发送方将要发送的消息采用公钥加密，得到密文，然后将密文发送给接收方；<br>　　3.接收方收到密文后，用自己的私钥进行解密，获得明文。<br>　　可以看出，非对称加密解决了对称加密密钥传输的问题。</p>
+<h2 id="数学基础"><a href="#数学基础" class="headerlink" title="数学基础"></a>数学基础</h2><p>　　RSA加密算法中，只用到素数、互质数、欧拉函数、模运算等简单的数学知识。</p>
+<h3 id="互质关系"><a href="#互质关系" class="headerlink" title="互质关系"></a>互质关系</h3><p>1.素数<br>　　素数又称质数，指在一个大于1的自然数中，除了1和此整数自身外，不能被其他自然数整除的数。<br>2.互质数<br>　　公因数只有1的两个数，叫做互质数；又称互素，若N个整数的最大公因子是1，则称这N个整数互质。<br>判断互质的简单法则：<br>　　a.任意两个质数是互质的；<br>　　b.一个数是质数，另一个数不是它的倍数，两者互质（比如正整数P是质数，则小于P的正整数和P都是互质的）；<br>　　c.两个不相等的数，较大的那个数是质数，两者互质；<br>　　d.1和任意自然数互质；<br>　　e.2和任何奇数是互质；<br>　　f.如果P是大于1的整数，则P和P-1互质；<br>　　g.如果P是大于1的奇数，则P和P-2互质。     </p>
+<h3 id="欧拉函数"><a href="#欧拉函数" class="headerlink" title="欧拉函数"></a>欧拉函数</h3><p>欧拉函数的推导：<br>　　任意给定正整数n，求在小于等于n的正整数中，有多少个与n互质的正整数？<br>推导步骤如下：<br>　　a.当n=1时，φ(1)=1（2.1中的d）；<br>　　b.n为质数时，φ(n)=n-1（2.1中的b）；<br>　　c.如果n是某一质数的m次方，即n=pm（p为质数，m为整数且大于等于1），则  </p>
+<center>φ(pm)=pm-pm-1=pm(1-1/p) </center><br>　　这个式子是如何得到的呢？<br>　　当m=1时，同情况b。<br>　　根据2.1的b，p是质数，则从1到pm的整数中，除去pk(m≥k≥1)，余下的都与pm互质，页就是说，一共n(其中n=pm)个数，其中有pm-1(即p,p2,…pm)个整数与n不是互质关系，则与n互质的整数个数为pm-pm-1。<br>　　d.当n=p1*p2，且p1、p2互质时，有<br><center>φ(n)= φ(p1p2)=φ(p1) φ(p2)</center><br>　　即积的欧如果a与p1互质(a&lt;p1)，b与p2互质(b&lt;p2)，c与p1p2互质(c&lt;p1p2)，则c与数对 (a,b) 是一一对应关系。由于a的值有φ(p1)种可能，b的值有φ(p2)种可能，则数对 (a,b) 有φ(p1) φ(p2)种可能，而c的值有φ(p1p2)种可能，所以φ(p1p2)就等于φ(p1) φ(p2)。拉函数等于各个因子的欧拉函数的积。<br>e.对于任意一个大于1的正整数，都可以写成<br><center>n=p1k1p2k2…prkr，其中，p1,p2,…,pk为质数。</center><br>　　由d可知<br><center>φ(n)= φ(p1k1)φ(p2k2)…φ(prkr)</center><br>　　再由c可知<br><center>φ(n)= p1k1p2k2…prkr(1-1/p1)(1-1/p2)…(1-1/pr)</center><br>　　即<br><center> <font color="red">φ(n)=n(1-1/p1)(1-1/p2)…(1-1/pr)</font>    </center><br>　　这就是<font color="blue">欧拉函数的通用计算公式</font>  。<br><br>### 欧拉定理<br><font color="red">欧拉定理</font>：<br>　　如果两个正整数a和n互质，则n的欧拉函数φ(n)可使下面等式成立<br><center><font color="red">aφ(n)≡1(mod n)</font></center><br>　　上式表示，a的φ(n)次方被n除的余数为1，或者叙述为，a的φ(n)次方减去1后可以被n整除。注意，φ(n)是n的欧拉函数。<br><br>　　欧拉定理的特殊情况：如果正整数a与质数p互质，因为质数p的φ(p)等于p-1，则欧拉定理可以写成就是我们所说的<font color="red">费马小定理</font><br><center>ap-1≡1(mod p)</center>
+
+<h3 id="模反元素"><a href="#模反元素" class="headerlink" title="模反元素"></a>模反元素</h3><p>模反元素：　　<br>　　如果两个正整数a和n互质，那么一定可以找到整数b，使得ab-1被n整除，或者说ab被n除的余数是1。这时b被称为a的模反元素。公式如下：</p>
+<center><font color="red">ab≡1(mod n)</font></center><br>　　注意，<font color="blue">模反元素并不唯一</font>，如果b是a的模反元素，则b+kn都是a的模反元素。<br>　　欧拉定理可以用来证明模反元素的必然存在：<br><center><font color="red">aφ(n)= a×aφ(n)-1≡1(mod n)</font></center>
+
+<h3 id="扩展欧几里得算法"><a href="#扩展欧几里得算法" class="headerlink" title="扩展欧几里得算法"></a>扩展欧几里得算法</h3><p>　　用来计算秘钥的d和e，这里不详细介绍，可参考<a href="https://baike.baidu.com/item/%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%B7%E7%AE%97%E6%B3%95?fr=aladdin" target="_blank" rel="noopener">扩展欧几里得算法</a>。</p>
+<h2 id="秘钥的生成与加解密"><a href="#秘钥的生成与加解密" class="headerlink" title="秘钥的生成与加解密"></a>秘钥的生成与加解密</h2><h3 id="密钥的生成"><a href="#密钥的生成" class="headerlink" title="密钥的生成"></a>密钥的生成</h3><p>密钥生成的步骤如下：<br>　　1.随机选择两个不相等的质数p和q；<br>　　2.计算p和q的乘积n（将n转换为二进制后，二进制的长度就是密钥的长度，实际应用中一般选择1024位、2048位）；<br>　　3.计算n的欧拉函数φ(n)；<br>　　4.随机选择一个整数e，其中φ(n)&gt;e&gt;1，且e与φ(n)互质（实际应用中e一般选为65537）；<br>　　5.计算e对于φ(n)的模反元素d；<br>　　6.将<font color="blue">n和e封装成公钥，n和d封装成私钥</font>。</p>
+<p>举例：<br>　　1.随机选择两个不相等的质数47和59；<br>　　2.二者的乘积为43×57=2773，2773转化为二进制为1010,1101,0101，长度为12位，所以密钥的长度为12位；<br>　　3.根据欧拉函数公式φ(n)=n(1-1/p)(1-1/q)计算，φ(2773)=2773×(1-1/47)(1-1/59)=(47-1)(59-1)=2668；<br>　　4.随机选择一个整数e=63，2668&gt;63&gt;1，并且63与2668互质；  　　5.计算63对于2668的模反元素d，根据公式ed≡1(mod φ(n))，有63d-1=2668k，由欧几里得扩展公式计算得d=847。<br>　　6.公钥(n,e)=(2773,63)，私钥(n,d)=(2773,847)。</p>
+<h3 id="加密和解密"><a href="#加密和解密" class="headerlink" title="加密和解密"></a>加密和解密</h3><p>1加密<br>　　假设发送方向接收方发送信息m，m未加密，我们称之为明文。发送方从接收方获得的公钥为(n,e)，加密公式为</p>
+<p><center><font color="red">me=c(mod n)</font></center><br>　　其中，<font color="blue">m必须是整数，而且m必须比n小</font>。<br>　　m,e,n已知，从上面的公式中计算出c，c就是加密后的信息，我们称之为密文。发送方将密文发送给接收方。</p>
+<p>2.解密<br>　　接收方从发送方接收到密文c，用自己的配对私钥(n,d)进行解密，解密公式为</p>
+<p><center><font color="red">cd=m(mod n)</font></center><br>　　已知c,n,d，从上面公式中计算出m，就是发送方发过来的明文。  </p>
+<p>举例：<br>1.加密<br>　　根据上面计算出的公钥(n,e)=(2773,63)，假如m=244，根据公式me=c(mod n)，可计算出密文c=465。<br>2.解密<br>　　根据上面计算出的私钥(n,d)=(2773,847)，已知c=465，根据公式cd=m(mod n)，可计算出明文m=244。</p>
+
+      
+    </div>
+    
+    
+    
+	<div>
+	  
+	    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束-------------</div>
+    
+</div>
+	  
+	</div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/计算机网络/" rel="tag"># 计算机网络</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/26/利用GitHub-Hexo-搭建个人博客/" rel="next" title="利用GitHub + Hexo 搭建个人博客">
+                <i class="fa fa-chevron-left"></i> 利用GitHub + Hexo 搭建个人博客
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="lollipop" />
+            
+              <p class="site-author-name" itemprop="name">lollipop</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数学基础"><span class="nav-number">2.</span> <span class="nav-text">数学基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#互质关系"><span class="nav-number">2.1.</span> <span class="nav-text">互质关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#欧拉函数"><span class="nav-number">2.2.</span> <span class="nav-text">欧拉函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模反元素"><span class="nav-number">2.3.</span> <span class="nav-text">模反元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展欧几里得算法"><span class="nav-number">2.4.</span> <span class="nav-text">扩展欧几里得算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#秘钥的生成与加解密"><span class="nav-number">3.</span> <span class="nav-text">秘钥的生成与加解密</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#密钥的生成"><span class="nav-number">3.1.</span> <span class="nav-text">密钥的生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加密和解密"><span class="nav-number">3.2.</span> <span class="nav-text">加密和解密</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lollipop</span>
+
+  <span class="post-meta-divider">|</span>
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i>
+    <span id="busuanzi_container_site_uv">本站访客数:<span id="busuanzi_value_site_uv"></span></span>
+   </div>
+
+  
+</div>
+
+<!--
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+-->
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_sphere.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("p6xkJqAOVytMxjIK8ykgw4OK-gzGzoHsz", "bSC57Qakd0aUrDw1WO8PcCgJ");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
